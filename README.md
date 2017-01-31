@@ -1,7 +1,6 @@
-[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/4k1/wufuzzer/blob/master/LICENSE)
 # Web URL Fuzzer - wufuzzer
 
-wufuzzer is very simple URL fuzzer to assess unnecessary files running on Python3.
+wufuzzer is very simple URL fuzzer to assess unnecessary files running on Python3 for all web security assessment professionals.
 
 ## System requirements
 
