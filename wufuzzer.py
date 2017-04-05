@@ -135,10 +135,22 @@ def fuzzdb():
                 if (deffile["type"] == "dironly"):
                     fuzzdb_dirs.append(passed(e))
                 elif(deffile["type"] == "mixed"):
+                    if (deffile["option"] == "fixed"):
                         if (e[-1:] == "/"):
                             fuzzdb_dirs.append(passed(e))
                         else:
                             fuzzdb_files.append(e)
+                    else:
+                        if "/" in e:                            
+                            pos = 0
+                            while True:
+                                ev = e[:e.find("/", pos)]
+                                fuzzdb_dirs.append(passed(ev))
+                                pos = e.find("/", pos)
+                                if pos == -1:
+                                    break
+                                pos += 1
+
                         else:
                             fuzzdb_dirs.append(e)
                 else:
