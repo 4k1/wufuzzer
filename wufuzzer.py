@@ -7,15 +7,15 @@ import time
 import curses
 import argparse
 import datetime
+import yaml
 
 __PRODUCT_ID = "Web URL Fuzzer 1.0 (c) 4k1/wufuzzer"
-
-confv        = {}
 
 fuzzdb_dirs  = ["/"]
 fuzzdb_files = []
 
 stdscr       = None
+confyml      = None
 
 class Logging():
     
@@ -49,32 +49,20 @@ def vsplit(iterable, n):
 def load_config():
     confs = []
     try:
-        f = open("wufuzzer.conf")
-        confs = f.readlines()
+        f = open("wufuzzer.yml")
+        global confyml
+        confyml = yaml.load(f)
         f.close()
     except:
-        return
+        print ("[-] Missing config to read 'wufuzzer.yml'.")
+        exit(-1)
     
-    for l in confs:
-        if l.find(" ") < 0:
-            continue
-        k = l[0:l.find(" ")].lower().strip()
-        v = l[l.find(" ") + 1:].strip()
-        if k[0:1] == "#":
-            continue
-    
-        u = []
-        if k in confv:
-            u = confv[k]
-        u.append(v)
-        confv[k] = u
-    
-def get_config(key, default=None, index=0):
-    if key in confv:
-        if confv[key][index].isdigit():
-            return int(confv[key][index])
+def get_config(key, default=None):
+    if key in confyml["core"]:
+        if type(confyml["core"][key]) is int:
+            return int(confyml["core"][key])
         else:
-            return confv[key][index]
+            return str(confyml["core"][key])
     elif default == None:
         raise
     else:
@@ -95,34 +83,58 @@ def filed(p):
     return p
 
 def fuzzdb():
+    global fuzzdb_dirs
+    global fuzzdb_files
+    
+    default_db = ""
+    try:
+        default_db = confyml["core"]["default_db"]
+    except:
+        print ("[-] Missing config 'core.default_db'.")
+        exit(-1)
+        
     base = ""
     try:
-        base = passed(confv["fuzzdb.base"][0])
+        base = passed(confyml[default_db]["base"])
     except:
-        print ("[-] Missing read config 'fuzzdb.base'.")
-        exit(-1)
-    
-    if "fuzzdb.default" not in confv:
+        print ("[*] Missing config '" + default_db + ".base'.")
         print ("[*] No default database.")
         return
-        
-    for deffile in confv["fuzzdb.default"]:
+    
+    for deffile in confyml[default_db]["files"]:
         try:
-            ftype = deffile.split(",")[0].strip()
-            fname = deffile.split(",")[1].strip()
+            if deffile["option"] not in ["dirs","fixed"]:
+                print ("[-] Unknown option '" + deffile["option"] + "'.") 
+                raise()
+            if deffile["type"] not in ["dironly","mixed"]:
+                print ("[-] Unknown type '" + deffile["type"] + "'.") 
+                raise()            
             
-            f = open("/" + base + fname)
-            er = f.readlines()
+            f = open("/" + base + deffile["file"])
+            dbrecords = f.readlines()
             f.close()
             
-            for e in er:
-                e = e.strip()
-                if (e[-1:] == "/" or ftype == "dir"):
+            for row in dbrecords:
+                e = row.strip()
+                
+                if (deffile["type"] == "dironly"):
                     fuzzdb_dirs.append(passed(e))
+                elif(deffile["type"] == "mixed"):
+                        if (e[-1:] == "/"):
+                            fuzzdb_dirs.append(passed(e))
+                        else:
+                            fuzzdb_files.append(e)
+                        else:
+                            fuzzdb_dirs.append(e)
                 else:
-                    fuzzdb_files.append(e)
+                    print ("[-] Mismatch options.")
+                    raise() 
+
         except:
-            print ("[*] Error has occurred to read '" + "/" + base + fname + "'. Skipped.")
+            print ("[*] Error has occurred to read '" + "/" + base + deffile["file"] + "'. Skipped.")
+
+    fuzzdb_dirs = list(set(fuzzdb_dirs))
+    fuzzdb_files = list(set(fuzzdb_files)) 
 
 class FuzzerRunner(threading.Thread):
     
@@ -231,7 +243,7 @@ def output_status(cnt, th):
         stdscr.refresh()    
 
 def fuzzer(target, logger):
-        
+    
     cnt = int(get_config('max_threads', 1))
     
     scnt_dir = int(len(fuzzdb_dirs) / cnt) + 1
