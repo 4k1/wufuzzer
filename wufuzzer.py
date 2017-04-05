@@ -297,15 +297,45 @@ def fuzzer(target, logger):
 if __name__ == '__main__':
     
     print (__PRODUCT_ID)
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__PRODUCT_ID)
     parser.add_argument("target")
+    parser.add_argument("--no-execute", dest='noexec', action='store_true', default=False, help='Output fuzzer table only if this flag is set (default: False)')
     args = parser.parse_args()
-
+    
     load_config()
     print ("[+] Loaded config.")
     fuzzdb()
     print ("[+] Loaded databases. ")
     print ("    " + str(len(fuzzdb_dirs)) + " dir(s), " + str(len(fuzzdb_files)) + " file(s).")
+
+    if args.noexec:
+        fn_key   = datetime.datetime.today().strftime("_%Y%m%d_%H%M%S_noexec_.txt")
+        fn_dirs  = "./dirs" + fn_key
+        fn_files = "./files" + fn_key
+        fn_fuzz  = "./fuzz" + fn_key
+        
+        f = open(fn_dirs, 'w')
+        for v in sorted(fuzzdb_dirs):
+            f.write(v + "\r\n")
+        f.close()
+        
+        f = open(fn_files, 'w')
+        for v in sorted(fuzzdb_files):
+            f.write(v + "\r\n")
+        f.close()
+        
+        f = open(fn_fuzz, 'w')
+        for v in fuzzdb_dirs:
+            for w in fuzzdb_files:
+                f.write(passed(v) +filed(w) + "\r\n")
+        f.close()
+        
+        print ("[+] --no-execute : dirs  = " + fn_dirs)
+        print ("[+] --no-execute : files = " + fn_files)
+        print ("[+] --no-execute : fuzz  = " + fn_fuzz)
+        print ("[ ] exit.")
+        exit(0)
+
     logger = Logging()
     print ("[+] Logging started. basename=./" + logger.get_basename() )
 
