@@ -1,5 +1,8 @@
 # Web URL Fuzzer - wufuzzer
 
+[![Python3](https://img.shields.io/badge/python-3.x-green.svg)](https://img.shields.io/badge/python-3.x-green.svg)
+[![category](https://img.shields.io/badge/Category-WebAssessment-blue.svg)](https://img.shields.io/badge/Category-WebAssessment-blue.svg)
+
 wufuzzer is very simple URL fuzzer to assess unnecessary files running on Python3 for all web security assessment professionals.
 
 ## System requirements
