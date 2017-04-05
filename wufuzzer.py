@@ -68,6 +68,20 @@ def get_config(key, default=None):
     else:
         return default
 
+def urled(p):
+    if "://" in p:
+        p = p[p.find("://")+3:]
+        if "/" not in p:
+            return ""
+        else:
+            p = p[p.find("/")+1:]
+            if p.split() == "":
+                return ""
+            else:
+                return p
+    else:
+        return p
+
 def passed(p):
     if p == "/":
         return ""
@@ -116,6 +130,7 @@ def fuzzdb():
             
             for row in dbrecords:
                 e = row.strip()
+                e = urled(e)
                 
                 if (deffile["type"] == "dironly"):
                     fuzzdb_dirs.append(passed(e))
