@@ -211,14 +211,14 @@ class FuzzerRunner(threading.Thread):
         self.__status   = "[ RUN ]"
         self.__nowcnt   = 0
         
-        for dir in sorted(self.__dirs):
-            cpath = passed(dir)
+        for dv in sorted(self.__dirs):
+            cpath = passed(dv)
             if not self.__scan(cpath):
                 return
             self.__nowcnt += 1
             
-            for file in sorted(self.__files):
-                cpath = passed(dir) + filed(file)
+            for fv in sorted(self.__files):
+                cpath = passed(dv) + filed(fv)
                 if not self.__scan(cpath):
                     return
                 self.__nowcnt += 1
