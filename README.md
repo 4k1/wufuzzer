@@ -3,12 +3,20 @@
 [![Python3](https://img.shields.io/badge/python-3.x-green.svg)](https://img.shields.io/badge/python-3.x-green.svg)
 [![category](https://img.shields.io/badge/Category-WebAssessment-blue.svg)](https://img.shields.io/badge/Category-WebAssessment-blue.svg)
 
-wufuzzer is very simple URL fuzzer to assess unnecessary files running on Python3 for all web security assessment professionals.
+wufuzzer is very simple URL fuzzer to assess unnecessary files running on Python3 for all professionals of web security assessment.
+
+## Features
+
+* Simple scanning listed directories and files on specified files.
+* Fast scanning with multiple threads and auto-retry when any errors occurred.
+* Dump scanned logs.
+* Graphical interface shows progresses clearly understandable.
+* Scanning step by step a path based on a separator.
 
 ## System requirements
 
 * Python3
-* requests(pip), yaml(pip)
+* requests (pip), yaml (pip)
 * (Optional) fuzzdb database as a list of well-known directories and files to scan.
 
 # Usage
@@ -18,14 +26,6 @@ $ python3 ./wufuzzer.py http://example.com/
 
 Demonstrated console:
 ![file](https://github.com/4k1/wufuzzer/blob/master/demo.png?raw=true)
-
-## Features
-
-* Simple scanning listed directories and files on specified files.
-* Fast scanning with multiple threads and auto-retry when any errors occurred.
-* Dump scanned logs.
-* Graphical interface shows progresses clearly understandable.
-* Scanning step by step a path based on a separator.
 
 ## How to install
 
@@ -158,3 +158,40 @@ default:
     test/test.d/test -> as a 'test/', a 'test/test.d/', a 'test/test.d/test/' directory pattern 
     ```
     - `type`=`dironly` and `option`=`fixed` case, the row of a database will be separated as a graded directory.
+
+## How to scan effectually a target site
+
+### Step 1: Set up the default databases.
+- Refer to the above.
+
+### Step 2: Make an URL list of the target site.
+- e.g. (As the URL list is located `/home/foo/Desktop/urllist_example_com.txt`)
+  ```
+  http://example.com/
+  http://example.com/products/index.html
+  http://example.com/products/qa/qalist.html
+  http://example.com/form/inquery.php
+  http://example.com/login/login.php
+  http://example.com/cms/products/users/index.php
+    :
+  ```
+
+### Step 3: Add database entry to the `wufuzzer.yml`
+- e.g.
+  ```
+  # Optional db
+  sitedb:
+      base:               /home/foo/Desktop/
+      files:
+            - file:           urllist_example_com.txt
+              type:           mixed
+              option:         dirs
+  ```
+- If you specified to use the `sitedb` when you call the scanner, it will be loaded the urllist file as a directory patterns. Therefore scanner is able to be checked all of actual directories on the target site.
+
+### Step 4: Do the scan
+- e.g.
+  ```
+  $ python3 ./wufuzzer.py -d sitedb http://example.com/
+  ```
+  - If you specified a parameter `-d {database-id}`, scanner will be extra loaded databases you specified.
