@@ -96,26 +96,35 @@ def filed(p):
         p = p[1:]
     return p
 
-def fuzzdb():
-    global fuzzdb_dirs
-    global fuzzdb_files
-    
+def fuzzdb(adddb_list):    
     default_db = ""
     try:
         default_db = confyml["core"]["default_db"]
+        __fuzzdb_load(default_db)
     except:
         print ("[-] Missing config 'core.default_db'.")
         exit(-1)
-        
+    
+    add_db = adddb_list.split(",")
+    for add_db_name in add_db:
+        if add_db_name.strip() == "":
+            continue
+        if __fuzzdb_load(add_db_name) == 1:
+            print ("[-] Missing config '" + add_db_name + "'.")
+            exit(-1)
+
+def __fuzzdb_load(dbkey):
+    global fuzzdb_dirs
+    global fuzzdb_files
+    
     base = ""
     try:
-        base = passed(confyml[default_db]["base"])
+        base = passed(confyml[dbkey]["base"])
     except:
-        print ("[*] Missing config '" + default_db + ".base'.")
-        print ("[*] No default database.")
-        return
+        print ("[*] Missing config '" + dbkey + ".base'.")
+        return 1
     
-    for deffile in confyml[default_db]["files"]:
+    for deffile in confyml[dbkey]["files"]:
         try:
             if deffile["option"] not in ["dirs","fixed"]:
                 print ("[-] Unknown option '" + deffile["option"] + "'.") 
@@ -159,6 +168,8 @@ def fuzzdb():
 
         except:
             print ("[*] Error has occurred to read '" + "/" + base + deffile["file"] + "'. Skipped.")
+
+    print ("[+] Loaded database '" + dbkey + "'.")
 
     fuzzdb_dirs = list(set(fuzzdb_dirs))
     fuzzdb_files = list(set(fuzzdb_files)) 
@@ -312,11 +323,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__PRODUCT_ID)
     parser.add_argument("target")
     parser.add_argument("--no-execute", dest='noexec', action='store_true', default=False, help='Output fuzzer table only if this flag is set (default: False)')
+    parser.add_argument("-d"          , dest='db'    , action='store'     , default=""   , help='Additional database name yaml defined.')
     args = parser.parse_args()
     
     load_config()
     print ("[+] Loaded config.")
-    fuzzdb()
+    fuzzdb(args.db)
     print ("[+] Loaded databases. ")
     print ("    " + str(len(fuzzdb_dirs)) + " dir(s), " + str(len(fuzzdb_files)) + " file(s).")
 
