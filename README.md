@@ -89,7 +89,72 @@ default:
             type:           mixed
             option:         fixed
 ```    
-- fuzzed.base : Location of your database.
-- fuzzdb.default : List to load default.
-    - dir : It will be loaded as directories database.
-    - mix : It will be loaded as directories and files database.
+
+#### `core` Section
+
+|Key|Description|
+|-|-|
+|max_threads      |Scanner threads.(Default: 1)                                                     |
+|request_interval |An interval second(s) per request.(Default: 0)                                   |
+|retry_interval   |Retry interval second(s) when error has occurred.(Default: 10)                   |
+|except_http_codes|Except http response code(s).(Defalt: 404 only)                                  |
+|default_db       |A default database id that scanner will be loaded automatically when it launched.|
+
+#### database id Section
+
+|Key|Description|
+|-|-|
+|id(e.g. default)|An unique id on this yaml.            |
+|->base          |A base directory of database file(s). |
+|->files         |(Files Entry)                         |
+|->->file        |A database file path without the base.|
+|->->type        |A file type of the file. It must be specified `dironly` or `mixed`.|
+|->->option      |A method to load the database. It must be specified `dirs` or `fixed`.(If type is `dironly`, option must be setted `dirs`.)|
+
+#### `type` Property
+
+- `dironly` : Only directories in the file.
+  -  e.g.
+     ```
+     test/
+     data/
+     debug/
+     asset/
+     cms/
+       :
+     ```
+
+- `mixed` : Directories and Files in the file.
+  - e.g.
+    ```
+    test/.gitconfig
+    data/index.html
+    debug/phpinfo.php
+      :
+    ```
+
+#### `option` Property
+
+- `dirs` : Scanner will be loaded it as a directories.
+  - e.g.
+    ```
+    test.php         -> as a 'test.php/' directory pattern
+    test/            -> as a 'test/' directory pattern
+    test/test.d      -> as a 'test/test.d/' directory pattern
+    ```
+
+- `fixed` : Depends on its `type` option. Basically, scanner will be loaded it as a directory and file path pair.
+  - e.g. (`type`=`mixed`)
+    ```
+    test.php         -> as a 'test.php' file pattern
+    test/            -> as a 'test/' directory pattern
+    test/test.d/test -> as a 'test/test.d/test' file pattern (fixed pair.)
+    ```
+
+  - e.g. (`type`=`dironly`)
+    ```
+    test.php         -> as a 'test.php/' directory pattern
+    test/            -> as a 'test/' directory pattern
+    test/test.d/test -> as a 'test/', a 'test/test.d/', a 'test/test.d/test/' directory pattern 
+    ```
+    - `type`=`dironly` and `option`=`fixed` case, the row of a database will be separated as a graded directory.
