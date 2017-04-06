@@ -7,11 +7,11 @@ wufuzzer is very simple URL fuzzer to assess unnecessary files running on Python
 
 ## Features
 
-* Simple scanning listed directories and files on specified files.
-* Fast scanning with multiple threads and auto-retry when any errors occurred.
+* Simple scanning directories and files listed on specified files.
+* Fast scanning by multiple threads and auto-retry when an error has occurred.
 * Dump scanned logs.
 * Graphical interface shows progresses clearly understandable.
-* Scanning step by step a path based on a separator.
+* Scanning paths in stages based on path separators.
 
 ## System requirements
 
@@ -109,7 +109,7 @@ default:
 |->files         |(Files Entry)                         |
 |->->file        |A database file path without the base.|
 |->->type        |A file type of the file. It must be specified `dironly` or `mixed`.|
-|->->option      |A method to load the database. It must be specified `dirs` or `fixed`.(If type is `dironly`, option must be setted `dirs`.)|
+|->->option      |A method to load the database. It must be specified `dirs` or `fixed`.(If type is `dironly`, option must be `dirs`.)|
 
 #### `type` Property
 
