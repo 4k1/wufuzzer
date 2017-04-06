@@ -24,7 +24,7 @@ wufuzzer is very simple URL fuzzer to assess unnecessary files running on Python
 $ python3 ./wufuzzer.py http://example.com/
 ```
 
-Demonstrated console:
+Demo:
 ![file](https://github.com/4k1/wufuzzer/blob/master/demo.png?raw=true)
 
 ## How to install
@@ -37,7 +37,7 @@ Shallow clone the source from github.
 git clone --depth 1 https://github.com/4k1/wufuzzer.git
 ```
 
-### Step 2: (Optional) Getting database
+### Step 2: Getting database (Optional)
 
 (e.g.) Shallow clone the database of Mozilla fuzzdb-project.
 
@@ -108,7 +108,7 @@ default:
 |->base          |A base directory of database file(s). |
 |->files         |(Files Entry)                         |
 |->->file        |A database file path without the base.|
-|->->type        |A file type of the file. It must be specified `dironly` or `mixed`.|
+|->->type        |A type of the file. It must be specified `dironly` or `mixed`.|
 |->->option      |A method to load the database. It must be specified `dirs` or `fixed`.(If type is `dironly`, option must be `dirs`.)|
 
 #### `type` Property
@@ -143,7 +143,7 @@ default:
     test/test.d      -> as a 'test/test.d/' directory pattern
     ```
 
-- `fixed` : Depends on its `type` option. Basically, scanner will be loaded it as a directory and file path pair.
+- `fixed` : Depends on its `type` option. Basically, scanner will be loaded it as a path-pair of the directory and the file.
   - e.g. (`type`=`mixed`)
     ```
     test.php         -> as a 'test.php' file pattern
@@ -187,11 +187,11 @@ default:
               type:           mixed
               option:         dirs
   ```
-- If you specified to use the `sitedb` when you call the scanner, it will be loaded the urllist file as a directory patterns. Therefore scanner is able to be checked all of actual directories on the target site.
+- If you specify to use the `sitedb` when you call the scanner, it will be loaded the URL list file as a directory patterns. Therefore scanner is able to be checked all of actual directories on the target site.
 
 ### Step 4: Do the scan
 - e.g.
   ```
   $ python3 ./wufuzzer.py -d sitedb http://example.com/
   ```
-  - If you specified a parameter `-d {database-id}`, scanner will be extra loaded databases you specified.
+  - If you specify a parameter `-d {database-id}`, the scanner will extra load the databases you specified.
